@@ -1,4 +1,4 @@
-service: aws-node-express-api-project
+service: message-microservice
 frameworkVersion: '3'
 
 useDotenv: true
@@ -10,7 +10,7 @@ provider:
     ACCOUNT_SID: ${env:ACCOUNT_SID}
     AUTH_TOKEN: ${env:AUTH_TOKEN}
     NUMBER_FROM_SEND_MESSAGE: ${env:NUMBER_FROM_SEND_MESSAGE}
-  region: 'us-east-2'
+  region: 'us-east-1'
 
 package:
   excludeDevDependencies: true
