@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "serverless offline start",
     "deploy": "serverless deploy --verbose",
-    "test": "env-cmd -f '.env' --fallback jest --coverage"
+    "test": "jest --coverage"
   },
   "dependencies": {
     "dotenv": "16.1.4",
