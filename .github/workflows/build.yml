@@ -46,6 +46,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Install Serverless Framework
+        run: npm install -g serverless
       - name: Deploy AWS
         run: npm run deploy
       - name: Send Notification on Failure
