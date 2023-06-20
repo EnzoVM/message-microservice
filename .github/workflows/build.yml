@@ -58,15 +58,14 @@ jobs:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
-      - name: Set environment variables
-        run: |
-          echo "ACCOUNT_SID=${{ env.ACCOUNT_SID }}" >> $GITHUB_ENV
-          echo "AUTH_TOKEN=${{ env.AUTH_TOKEN }}" >> $GITHUB_ENV
-          echo "NUMBER_FROM_SEND_MESSAGE=${{ env.NUMBER_FROM_SEND_MESSAGE }}" >> $GITHUB_ENV
       - name: Install Serverless Framework
         run: npm install -g serverless
+      - name: Install plugins
+        run: |
+          npm install --save-dev serverless-offline
+          npm install --save-dev serverless-dotenv-plugin
       - name: Deploy AWS
-        run: npm run deploy
+        run: serverless deploy --param="ACCOUNT_SID=${{ env.ACCOUNT_SID }}" --param="AUTH_TOKEN=${{ env.AUTH_TOKEN }}" --param="NUMBER_FROM_SEND_MESSAGE=${{ env.NUMBER_FROM_SEND_MESSAGE }}" --verbose
       - name: Send Notification on Failure
         if: ${{ failure() }}
         uses: teknatha136/actions-google-chat-text-message@v1.0.0
