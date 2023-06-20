@@ -1,16 +1,29 @@
 name: Build
 on:
-  push:
-    branches:
-      - main
   pull_request:
+    branches:
+      - develop
+      - main
     types: [opened, synchronize, reopened]
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  GOOGLE_CHAT_WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_REGION: us-east-1
+  ACCOUNT_SID: ${{ secrets.ACCOUNT_SID }}
+  AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+  NUMBER_FROM_SEND_MESSAGE: ${{ secrets.NUMBER_FROM_SEND_MESSAGE }}
+
 jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' && (github.base_ref == 'develop' || github.base_ref == 'main') }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout source code
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install dependencies
@@ -21,4 +34,44 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+      - name: Send Notification on Failure
+        if: ${{ failure() }}
+        uses: teknatha136/actions-google-chat-text-message@v1.0.0
+        with:
+          google-chat-webhook: ${{ env.GOOGLE_CHAT_WEBHOOK }}
+          text-message: 'Error in SonarCloud section in message microservice'
+
+  deploy-aws:
+    name: Deploy AWS
+    runs-on: ubuntu-latest
+    needs: sonarcloud
+    if: ${{ github.event_name == 'pull_request' && github.base_ref == 'main' }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: npm i
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Install Serverless Framework
+        run: npm install -g serverless
+      - name: Deploy AWS
+        run: serverless deploy 
+            --param="ACCOUNT_SID=${{ env.ACCOUNT_SID }}" 
+            --param="AUTH_TOKEN=${{ env.AUTH_TOKEN }}" 
+            --param="NUMBER_FROM_SEND_MESSAGE=${{ env.NUMBER_FROM_SEND_MESSAGE }}" 
+            --param="AWS_REGION=${{ env.AWS_REGION }}" 
+            --verbose
+      - name: Send Notification on Failure
+        if: ${{ failure() }}
+        uses: teknatha136/actions-google-chat-text-message@v1.0.0
+        with:
+          google-chat-webhook: ${{ env.GOOGLE_CHAT_WEBHOOK }}
+          text-message: 'Error in Deploy AWS section in message microservice'
