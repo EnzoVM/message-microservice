@@ -10,7 +10,7 @@ provider:
     ACCOUNT_SID: ${param:ACCOUNT_SID}                                 #${env:ACCOUNT_SID} v
     AUTH_TOKEN: ${param:AUTH_TOKEN}                                   #${env:AUTH_TOKEN} use this if you deploy in local
     NUMBER_FROM_SEND_MESSAGE: ${param:NUMBER_FROM_SEND_MESSAGE}       #${env:NUMBER_FROM_SEND_MESSAGE} use this if you deploy in local
-  region: ${param:AWS_REGION}                                         #'us-east-1' use this if you deploy in local
+  region: ${param:AWS_REGION}                                         #'us-east-1 or your region' use this if you deploy in local
 
 package:
   excludeDevDependencies: true
@@ -22,5 +22,5 @@ functions:
       - httpApi: '*'
 
 # plugins:                                                            #use this if you deploy in local
-#   - serverless-offline
-#   - serverless-dotenv-plugin        
+#  - serverless-offline
+#  - serverless-dotenv-plugin        
