@@ -1,16 +1,16 @@
 service: message-microservice
 frameworkVersion: '3'
 
-useDotenv: true
+#useDotenv: true                                                      #use this if you deploy in local
 
 provider:
   name: aws
   runtime: nodejs18.x
   environment:
-    ACCOUNT_SID: ${param:ACCOUNT_SID}                                 #${env:ACCOUNT_SID} use this if you deploy in local
+    ACCOUNT_SID: ${param:ACCOUNT_SID}                                 #${env:ACCOUNT_SID} v
     AUTH_TOKEN: ${param:AUTH_TOKEN}                                   #${env:AUTH_TOKEN} use this if you deploy in local
     NUMBER_FROM_SEND_MESSAGE: ${param:NUMBER_FROM_SEND_MESSAGE}       #${env:NUMBER_FROM_SEND_MESSAGE} use this if you deploy in local
-  region: 'us-east-1'
+  region: ${param:AWS_REGION}                                         #'us-east-1' use this if you deploy in local
 
 package:
   excludeDevDependencies: true
@@ -20,7 +20,7 @@ functions:
     handler: src/index.handler
     events:
       - httpApi: '*'
-      
-plugins:
-  - serverless-offline
-  - serverless-dotenv-plugin
+
+# plugins:                                                            #use this if you deploy in local
+#   - serverless-offline
+#   - serverless-dotenv-plugin        

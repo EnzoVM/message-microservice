@@ -60,12 +60,13 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - name: Install Serverless Framework
         run: npm install -g serverless
-      - name: Install plugins
-        run: |
-          npm install --save-dev serverless-offline
-          npm install --save-dev serverless-dotenv-plugin
       - name: Deploy AWS
-        run: serverless deploy --param="ACCOUNT_SID=${{ env.ACCOUNT_SID }}" --param="AUTH_TOKEN=${{ env.AUTH_TOKEN }}" --param="NUMBER_FROM_SEND_MESSAGE=${{ env.NUMBER_FROM_SEND_MESSAGE }}" --verbose
+        run: serverless deploy 
+            --param="ACCOUNT_SID=${{ env.ACCOUNT_SID }}" 
+            --param="AUTH_TOKEN=${{ env.AUTH_TOKEN }}" 
+            --param="NUMBER_FROM_SEND_MESSAGE=${{ env.NUMBER_FROM_SEND_MESSAGE }}" 
+            --param="AWS_REGION=${{ env.AWS_REGION }}" 
+            --verbose
       - name: Send Notification on Failure
         if: ${{ failure() }}
         uses: teknatha136/actions-google-chat-text-message@v1.0.0
