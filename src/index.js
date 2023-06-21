@@ -1,7 +1,3 @@
-const AWSXRay = require('aws-xray-sdk')
-AWSXRay.captureHTTPsGlobal(require('http'))
-AWSXRay.captureHTTPsGlobal(require('https'))
-
 const serverless = require("serverless-http")
 const express = require("express");
 const app = express();
